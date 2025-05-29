@@ -14,7 +14,7 @@
 
 ### Windows
 
-1. Download and install [Rufus](https://rufus.ie/) or [Balena Etcher](https://www.balena.io/etcher/).
+1. Download and install [Rufus](https://rufus.ie/) (my recommendation) or [Balena Etcher](https://www.balena.io/etcher/).
 2. Insert a USB drive (at least 2GB).
 3. Open Rufus or Balena Etcher.
 4. Select the downloaded Arch Linux ISO file.
@@ -43,7 +43,6 @@
    ```
 
    Replace `archlinux.iso` with your ISO file name and `/dev/sdX` with your USB drive identifier.
-
 6. Wait for the process to complete.
 
 ## Boot from the USB Drive
@@ -62,10 +61,8 @@ Your computer should now boot from the USB drive, and you will see the Arch Linu
 
 1. Select "Arch Linux install medium (x86_64)" or similar from the menu.
    ![1748448107676](image/arch_install/1748448107676.png)
-
 2. Wait for the system to boot into the Arch Linux live environment (see picture).
    ![1748444339526](image/arch_install/1748444339526.png)
-
 3. Change the keyboard layout if necessary:
 
    ```bash
@@ -73,7 +70,6 @@ Your computer should now boot from the USB drive, and you will see the Arch Linu
    ```
 
    Replace `us` with your desired keyboard layout. (You can see available layouts with `localectl list-keymaps`. I will be using `de` for the German layout.)
-
 4. Connect to the internet:
 
    - For wired connections, it should automatically connect. (There might be issues on MacBooks, try looking on arch forums or something.)
@@ -92,7 +88,6 @@ Your computer should now boot from the USB drive, and you will see the Arch Linu
      ```
 
      Replace `device` with your wireless device name and `SSID` with your Wi-Fi network name.
-
 5. Verify the internet connection:
 
    ```bash
@@ -101,7 +96,6 @@ Your computer should now boot from the USB drive, and you will see the Arch Linu
 
    If you receive replies like in this picture, your internet connection is working.
    ![1748444907451](image/arch_install/1748444907451.png)
-
 6. Update the system clock:
 
    ```bash
@@ -132,9 +126,9 @@ Your computer should now boot from the USB drive, and you will see the Arch Linu
     - Press `Enter` to select an option.
   - Now create the following partitions:
     1. **EFI System Partition** (ESP):
-       - Size: `1G`<br>
+       - Size: `1G<br>`
          ![1748445155770](image/arch_install/1748445155770.png)
-       - Type: `EFI System`<br>
+       - Type: `EFI System<br>`
          ![1748445185330](image/arch_install/1748445185330.png)
     2. **Swap Partition** (optional, if you want swap):
        - Size: Typically 1x or 2x your RAM size (e.g., if you have 8GB of RAM, use 8G or 16G).
@@ -153,19 +147,16 @@ Your computer should now boot from the USB drive, and you will see the Arch Linu
 - Run lsblk again to see the partitions you just created:
 
   ![1748445616668](image/arch_install/1748445616668.png)
-
 - Format the EFI System Partition to FAT32 (ESP, the 1G big partition):
 
   ```bash
   mkfs.fat -F 32 /dev/sda1
   ```
-
 - Format the root partition to ext4:
 
   ```bash
   mkfs.ext4 /dev/sda3
   ```
-
 - If you created a swap partition, make it a swap partition:
 
   ```bash
@@ -182,13 +173,11 @@ Your computer should now boot from the USB drive, and you will see the Arch Linu
   ```bash
   mount /dev/sda3 /mnt
   ```
-
 - Mount the EFI System Partition (--mkdir automatically creates the directory if it doesn't exist):
 
   ```bash
   mount /dev/sda1 /mnt/boot --mkdir
   ```
-
 - If you created a swap partition, it is already activated with the `swapon` command above.
 - Verify the mounted partitions:
 
@@ -240,7 +229,6 @@ pacstrap -K /mnt base linux linux-firmware linux-headers nano sudo networkmanage
   ```bash
   arch-chroot /mnt
   ```
-
 - You should now be in the new Arch Linux environment, indicated by the prompt no longer being red.
 - Set the timezone:
 
@@ -249,7 +237,6 @@ pacstrap -K /mnt base linux linux-firmware linux-headers nano sudo networkmanage
     ```bash
     ls /usr/share/zoneinfo
     ```
-
   - Set your timezone (replace `Region/City` with your actual timezone, e.g., `Europe/Berlin`):
 
     ```bash
@@ -266,7 +253,6 @@ pacstrap -K /mnt base linux linux-firmware linux-headers nano sudo networkmanage
       ```bash
       nano /etc/locale.gen
       ```
-
     - Uncomment the line for your locale (e.g., `en_US.UTF-8 UTF-8` for English or `de_DE.UTF-8 UTF-8` for German).
     - Save and exit nano (Either Ctrl + X, then Y, then Enter).
     - Generate the locale:
@@ -274,21 +260,17 @@ pacstrap -K /mnt base linux linux-firmware linux-headers nano sudo networkmanage
       ```bash
       locale-gen
       ```
-
     - Edit locale.conf:
 
       ```bash
       nano /etc/locale.conf
       ```
-
     - Add the following line (replace `en_US.UTF-8` with your locale):
 
       ```conf
       LANG=en_US.UTF-8
       ```
-
     - Save and exit nano.
-
   - Edit vconsole.conf:
 
     ```bash
@@ -300,9 +282,7 @@ pacstrap -K /mnt base linux linux-firmware linux-headers nano sudo networkmanage
       ```conf
       KEYMAP=de-latin1
       ```
-
     - Save and exit nano.
-
   - Set the hostname:
 
     ```bash
@@ -311,13 +291,11 @@ pacstrap -K /mnt base linux linux-firmware linux-headers nano sudo networkmanage
 
     - Add your desired hostname, nothing else (e.g., `archlinux`):
     - Save and exit nano.
-
   - Create Initramfs:
 
     ```bash
     mkinitcpio -P
     ```
-
   - Set the root password:
 
     - Enter your desired root password when prompted.
@@ -325,13 +303,11 @@ pacstrap -K /mnt base linux linux-firmware linux-headers nano sudo networkmanage
     ```bash
     passwd
     ```
-
   - Enable NetworkManager:
 
     ```bash
     systemctl enable NetworkManager
     ```
-
   - Install and configure the bootloader (GRUB):
 
     - Install the GRUB bootloader:
@@ -339,7 +315,6 @@ pacstrap -K /mnt base linux linux-firmware linux-headers nano sudo networkmanage
       ```bash
       grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
       ```
-
     - Generate the GRUB configuration file:
 
       ```bash
@@ -349,7 +324,6 @@ pacstrap -K /mnt base linux linux-firmware linux-headers nano sudo networkmanage
     ![1748448338778](image/arch_install/1748448338778.png)
 
     - If you want GRUB to detect other operating systems, open `/etc/default/grub` with nano, find the line that says `#GRUB_DISABLE_OS_PROBER=false` and uncomment/change it to `GRUB_DISABLE_OS_PROBER=false`. Then run the `grub-mkconfig` command again (as seen above).
-
   - Create a new user (optional but recommended):
 
     - Create a new user (replace `username` with your desired username):
@@ -357,40 +331,33 @@ pacstrap -K /mnt base linux linux-firmware linux-headers nano sudo networkmanage
       ```bash
       useradd -m -G wheel username
       ```
-
     - Set the password for the new user:
 
       ```bash
       passwd username
       ```
-
     - Allow the new user to use `sudo` by editing the sudoers file:
 
       ```bash
       EDITOR=nano visudo
       ```
-
     - Uncomment the line that says `%wheel ALL=(ALL) ALL` to allow users in the `wheel` group to use `sudo`. (not the line with `NOPASSWSD`)
     - Save and exit nano.
-
   - Exit the chroot environment:
 
     ```bash
     exit
     ```
-
   - Unmount the partitions (optional):
 
     ```bash
     umount -R /mnt
     ```
-
   - Reboot the system:
 
     ```bash
     reboot
     ```
-
   - You can remove the USB drive now.
   - After rebooting, you should see the GRUB menu. Select Arch Linux to boot into your new installation.
   - If you created a new user, log in with that user. Otherwise, log in as root with the password you set earlier.
@@ -407,16 +374,13 @@ sudo pacman -Syu
 
 - Install the base-devel group if you haven't already:
 
-      ```bash
-      sudo pacman -S base-devel
-      ```
+  ``bash sudo pacman -S base-devel ``
 
   - Clone the Yay repository and change into the directory:
 
     ```bash
     git clone https://aur.archlinux.org/yay-bin.git && cd yay-bin
     ```
-
   - Build and install Yay:
 
     ```bash
@@ -425,10 +389,8 @@ sudo pacman -Syu
 
 ### **Install additional packages**
 
-    - You can now install additional packages using `pacman` or `yay`. For example, to install a graphical environment, you can use this to install KDE Plasma:
+    - You can now install additional packages using`pacman` or `yay`. For example, to install a graphical environment, you can use this to install KDE Plasma:
 
-      ```bash
-      sudo pacman -Sy plasma
-      ```
+    ``bash       sudo pacman -Sy plasma       ``
 
-    Check the Arch Wiki for more information on other desktop environments: [Arch Wiki - Desktop environments](https://wiki.archlinux.org/title/Desktop_environment).
+    Check the Arch Wiki for more information on other desktop environments:[Arch Wiki - Desktop environments](https://wiki.archlinux.org/title/Desktop_environment).
